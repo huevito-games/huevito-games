@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Control de única pestaña</title>
+
+<script>
+(function() {
+    const PAGE_KEY = "pagina_unica_abierta";
+    const tabId = Date.now() + "_" + Math.random();
+
+    // Si ya existe una pestaña registrada, esta se cierra
+    if (localStorage.getItem(PAGE_KEY)) {
+        alert("Esta página ya está abierta en otra pestaña.");
+        window.close();
+
+        // Fallback si el navegador no permite cerrar
+        document.body.innerHTML = "<h1>Esta página ya está abierta en otra pestaña.</h1>";
+    } else {
+        // Registrar esta pestaña como activa
+        localStorage.setItem(PAGE_KEY, tabId);
+    }
+
+    // Escuchar cambios en otras pestañas
+    window.addEventListener("storage", function(event) {
+        if (event.key === PAGE_KEY && event.newValue !== tabId) {
+            alert("Otra pestaña tomó el control. Esta se cerrará.");
+            window.close();
+            document.body.innerHTML = "<h1>La sesión se movió a otra pestaña.</h1>";
+        }
+    });
+
+    // Cuando se cierre la pestaña, liberar el bloqueo
+    window.addEventListener("beforeunload", function() {
+        if (localStorage.getItem(PAGE_KEY) === tabId) {
+            localStorage.removeItem(PAGE_KEY);
+        }
+    });
+
+})();
+</script>
+
+</head>
+<body>
+<h1>Solo puede haber una pestaña abierta</h1>
+<p>Si abres esta página en otra pestaña, la nueva se cerrará automáticamente.</p>
+</body>
+</html>
