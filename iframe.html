@@ -1,8 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Inicio</title>
-  <link rel="icon" type="image/x-icon" href="https://www.gstatic.com/classroom/logo_square_rounded.svg" />
-<head>
-  <body style="margin: 0px; height: 100vh;"><iframe src="https://huevitogames.home.kg/boton" sandbox="allow-scripts allow-top-navigation-by-user-activation" style="border: none; width: 100%; height: 100%; margin: 0px;"></iframe>
-<html>
+  <meta charset="UTF-8">
+  <title>Página contenedora</title>
+</head>
+<body>
+
+<iframe
+  id="miIframe"
+  src="https://huevitohosting.wixsite.com/huevito-gamess"
+  width="100%"
+  height="600"
+  style="border:none;"
+></iframe>
+
+<script>
+  const iframe = document.getElementById("miIframe");
+
+  iframe.addEventListener("load", () => {
+    try {
+      // Obtener la URL actual del iframe
+      const iframeURL = iframe.contentWindow.location.href;
+
+      // Extraer la última parte después del último /
+      const lastPart = iframeURL
+        .split("/")
+        .filter(Boolean)
+        .pop();
+
+      if (lastPart) {
+        const nuevaURL = "https://huevitogames.home.kg/" + lastPart;
+        window.location.href = nuevaURL;
+      }
+
+    } catch (e) {
+      // ⚠️ Si el iframe es cross-origin y bloquea acceso
+      console.warn("No se puede leer la URL del iframe directamente.");
+    }
+  });
+</script>
+
+</body>
+</html>
