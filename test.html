@@ -8,29 +8,25 @@
 (function() {
     const PAGE_KEY = "pagina_unica_abierta";
     const tabId = Date.now() + "_" + Math.random();
+    const REDIRECT_URL = "https://huevito-games.github.io/autoclose/";
 
-    // Si ya existe una pestaña registrada, esta se cierra
+    // Si ya existe una pestaña activa → redirigir inmediatamente
     if (localStorage.getItem(PAGE_KEY)) {
-        alert("Esta página ya está abierta en otra pestaña.");
-        window.close();
-
-        // Fallback si el navegador no permite cerrar
-        document.body.innerHTML = "<h1>Esta página ya está abierta en otra pestaña.</h1>";
-    } else {
-        // Registrar esta pestaña como activa
-        localStorage.setItem(PAGE_KEY, tabId);
+        window.location.replace(REDIRECT_URL);
+        return;
     }
 
-    // Escuchar cambios en otras pestañas
+    // Registrar esta pestaña
+    localStorage.setItem(PAGE_KEY, tabId);
+
+    // Detectar si otra pestaña toma el control
     window.addEventListener("storage", function(event) {
         if (event.key === PAGE_KEY && event.newValue !== tabId) {
-            alert("Otra pestaña tomó el control. Esta se cerrará.");
-            window.close();
-            document.body.innerHTML = "<h1>La sesión se movió a otra pestaña.</h1>";
+            window.location.replace(REDIRECT_URL);
         }
     });
 
-    // Cuando se cierre la pestaña, liberar el bloqueo
+    // Liberar bloqueo al cerrar
     window.addEventListener("beforeunload", function() {
         if (localStorage.getItem(PAGE_KEY) === tabId) {
             localStorage.removeItem(PAGE_KEY);
@@ -43,6 +39,5 @@
 </head>
 <body>
 <h1>Solo puede haber una pestaña abierta</h1>
-<p>Si abres esta página en otra pestaña, la nueva se cerrará automáticamente.</p>
 </body>
 </html>
