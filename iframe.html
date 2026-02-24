@@ -8,19 +8,13 @@
 
 <iframe
   id="miIframe"
-  src="https://huevitohosting.wixsite.com/huevito-gamess"
+  src="https://huevitogames.home.kg"
   width="100%"
   height="600"
   style="border:none;"
 ></iframe>
 
 <script>
-// Función para abrir errores en una nueva pestaña usando data URL
-function reportError(errorText) {
-  const encoded = encodeURIComponent(errorText);
-  window.open(`data:,${encoded}`, "_blank");
-}
-
 const iframe = document.getElementById("miIframe");
 
 iframe.addEventListener("load", () => {
@@ -41,8 +35,8 @@ iframe.addEventListener("load", () => {
       window.location.href = nuevaURL;
     }
   } catch (e) {
-    // Aquí abrimos la nueva pestaña con el error
-    reportError("No se puede leer la URL del iframe directamente (cross-origin): " + e.message);
+    // Abrir una nueva pestaña con el error
+    window.open("data:," + "No se puede leer la URL del iframe directamente (cross-origin): ");
   }
 });
 </script>
