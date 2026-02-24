@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Abrir página con JS</title>
+<script>
+  // Opcional: código que se ejecuta en la página principal
+  console.log("Página principal lista");
+</script>
+</head>
+<body>
+<h1>Botón para abrir nueva página</h1>
+
+<!-- Botón que abre la página deseada -->
+<button id="abrirBtn">Abrir página con JavaScript activo</button>
+
+<script>
+document.getElementById("abrirBtn").addEventListener("click", () => {
+  // Abre la página en una nueva pestaña
+  // Reemplaza 'pagina.html' por la URL que quieras abrir
+  window.open("pagina.html", "_blank");
+});
+</script>
+
+</body>
+</html>
