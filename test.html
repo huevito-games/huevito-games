@@ -6,23 +6,38 @@
 
 <script>
 (function() {
+
     const PAGE_KEY = "pagina_unica_abierta";
     const tabId = Date.now() + "_" + Math.random();
     const REDIRECT_URL = "https://huevito-games.github.io/autoclose/";
 
-    // Si ya existe una pestaña activa → redirigir inmediatamente
+    // Función que redirige abriendo con JS y luego intenta cerrar
+    function redirectAndClose() {
+        // Abrir la URL con JavaScript
+        window.open(REDIRECT_URL, "_self");
+
+        // Intentar cerrar esta pestaña
+        window.close();
+
+        // Fallback si el navegador bloquea el cierre
+        setTimeout(function(){
+            document.body.innerHTML = "";
+        }, 50);
+    }
+
+    // Si ya hay una pestaña registrada
     if (localStorage.getItem(PAGE_KEY)) {
-        window.location.replace(REDIRECT_URL);
+        redirectAndClose();
         return;
     }
 
-    // Registrar esta pestaña
+    // Registrar esta pestaña como activa
     localStorage.setItem(PAGE_KEY, tabId);
 
-    // Detectar si otra pestaña toma el control
+    // Escuchar si otra pestaña toma el control
     window.addEventListener("storage", function(event) {
         if (event.key === PAGE_KEY && event.newValue !== tabId) {
-            window.location.replace(REDIRECT_URL);
+            redirectAndClose();
         }
     });
 
