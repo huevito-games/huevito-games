@@ -8,36 +8,43 @@
 
 <iframe
   id="miIframe"
-  src="https://huevitohosting.wixsite.com/huevito-gamess"
+  src="https://huevitogames.home.kg"
   width="100%"
   height="600"
   style="border:none;"
 ></iframe>
 
 <script>
-  const iframe = document.getElementById("miIframe");
+// Función para abrir errores en una nueva pestaña usando data URL
+function reportError(errorText) {
+  const encoded = encodeURIComponent(errorText);
+  window.open(`data:,${encoded}`, "_blank");
+}
 
-  iframe.addEventListener("load", () => {
-    try {
-      // Obtener la URL actual del iframe
-      const iframeURL = iframe.contentWindow.location.href;
+const iframe = document.getElementById("miIframe");
 
-      // Extraer la última parte después del último /
-      const lastPart = iframeURL
-        .split("/")
-        .filter(Boolean)
-        .pop();
+iframe.addEventListener("load", () => {
+  try {
+    // Obtener la URL completa del iframe
+    const iframeURL = iframe.contentWindow.location.href;
 
-      if (lastPart) {
-        const nuevaURL = "a" + lastPart;
-        window.location.href = nuevaURL;
-      }
+    // Crear un objeto URL para separar bien la ruta
+    const urlObj = new URL(iframeURL);
 
-    } catch (e) {
-      // ⚠️ Si el iframe es cross-origin y bloquea acceso
-      console.warn("No se puede leer la URL del iframe directamente.");
+    // Tomar la última parte de la ruta
+    const pathSegments = urlObj.pathname.split("/").filter(Boolean);
+    const lastPart = pathSegments.pop(); // solo "juegos" por ejemplo
+
+    if (lastPart) {
+      // Construir la nueva URL correcta
+      const nuevaURL = urlObj.origin + "/" + lastPart;
+      window.location.href = nuevaURL;
     }
-  });
+  } catch (e) {
+    // Aquí abrimos la nueva pestaña con el error
+    reportError("No se puede leer la URL del iframe directamente (cross-origin): " + e.message);
+  }
+});
 </script>
 
 </body>
