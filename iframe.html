@@ -2,37 +2,51 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>0.2</title>
+  <title>0.5</title>
 </head>
 <body>
 
 <iframe
   id="miIframe"
-  src="https://huevitohosting.wixsite.com/huevito-gamess"
+  src="https://huevitohosting.wixsite.com/huevito-gamess/juegos"
   width="100%"
   height="600"
   style="border:none;"
 ></iframe>
 
 <script>
-// Solo podemos usar la URL inicial del iframe
 const iframe = document.getElementById("miIframe");
-try {
-  const iframeURL = iframe.src; // URL inicial del iframe
-  const urlObj = new URL(iframeURL);
-  const pathSegments = urlObj.pathname.split("/").filter(Boolean);
-  const lastPart = pathSegments.pop();
 
-  if (lastPart) {
-    // Redirigir la página principal automáticamente
-    window.location.href = window.location.origin + "/" + lastPart;
+// Guardamos la URL inicial del iframe
+let lastURL = iframe.src;
+
+iframe.addEventListener("load", () => {
+  try {
+    // Cada vez que el iframe se recarga
+    console.log("El iframe se ha recargado");
+
+    // Detectamos que ha cambiado (recargado)
+    if (iframe.src !== lastURL) {
+      lastURL = iframe.src;
+    }
+
+    // Tomamos el último segmento de la URL inicial (no cross-origin)
+    const urlObj = new URL(lastURL);
+    const pathSegments = urlObj.pathname.split("/").filter(Boolean);
+    const lastPart = pathSegments.pop();
+
+    if (lastPart) {
+      // Redirigir la página padre al mismo dominio con el último segmento
+      window.location.href = window.location.origin + "/" + lastPart;
+    }
+
+  } catch (e) {
+    // Ventana de error
+    const errorWindow = window.open("", "Error", "width=600,height=400");
+    errorWindow.document.write("<h2>Error procesando iframe</h2>");
+    errorWindow.document.write("<p>" + e.message + "</p>");
   }
-} catch (e) {
-  // Ventana de error si algo falla
-  const errorWindow = window.open("", "Error", "width=600,height=400");
-  errorWindow.document.write("<h2>Error al procesar la URL del iframe</h2>");
-  errorWindow.document.write("<p>" + e.message + "</p>");
-}
+});
 </script>
 
 </body>
