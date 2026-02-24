@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Página contenedora</title>
+  <title>v0.1</title>
 </head>
 <body>
 
@@ -15,33 +15,30 @@
 ></iframe>
 
 <script>
+// Obtener el iframe
 const iframe = document.getElementById("miIframe");
 
-// Escuchamos mensajes del iframe
+// Escuchar mensajes del iframe (cross-origin seguro)
 window.addEventListener("message", (event) => {
   try {
-    // Solo procesamos mensajes de Wix
+    // Solo procesamos mensajes de wixsite.com
     if (!event.origin.includes("wixsite.com")) return;
 
-    // Obtenemos la URL enviada por el iframe
+    // Obtener la URL enviada por el iframe
     const iframeURL = event.data;
-    const urlObj = new URL(iframeURL);
 
-    // Extraemos la última parte de la ruta
+    // Separar la URL
+    const urlObj = new URL(iframeURL);
     const pathSegments = urlObj.pathname.split("/").filter(Boolean);
-    const lastPart = pathSegments.pop();
+    const lastPart = pathSegments.pop(); // Tomar última parte de la ruta
 
     if (lastPart) {
-      // Redirigir la página principal a la última parte
-      const nuevaURL = "https://paginaiframe.com/" + lastPart;
+      // Redirigir la página principal al mismo dominio, con el último segmento del iframe
+      const nuevaURL = window.location.origin + "/" + lastPart;
       window.location.href = nuevaURL;
     }
   } catch (e) {
-    // Crear ventana de error mostrando el mensaje
-    const errorWindow = window.open("", "Error", "width=600,height=400");
-    errorWindow.document.write("<h2>Error al procesar postMessage del iframe</h2>");
-    errorWindow.document.write("<p>" + e.message + "</p>");
-    errorWindow.document.write("<pre>" + e.stack + "</pre>");
+    console.error("Error al procesar el mensaje del iframe:", e);
   }
 });
 </script>
