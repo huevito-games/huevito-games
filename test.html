@@ -2,49 +2,44 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Mi página con autocierre seguro</title>
+<title>Control de Pestañas</title>
 <script>
-(() => {
-  const KEY = "TAB_UNICA_JS";
-  const ID = Date.now() + Math.random();
+  // Guardamos todas las pestañas abiertas por script
+  if (!window.tabs) window.tabs = [];
 
-  // 1️⃣ Escuchar cambios de otras pestañas
-  addEventListener("storage", e => {
-    if (e.key === KEY && e.newValue != ID) {
-      // Aviso que otra pestaña tomó control
-      alert("Otra pestaña activa ha sido detectada. Esta pestaña intentará cerrarse o recargarse.");
-
-      // Intento de cierre
-      try {
-        window.close();
-        // Si no se puede cerrar, recarga esta misma pestaña para reactivar el control
-        setTimeout(() => location.reload(), 500);
-      } catch (err) {
-        location.reload();
-      }
-    }
-  });
-
-  // 2️⃣ Registrar esta pestaña como la activa
-  const ping = () => localStorage.setItem(KEY, ID);
-  ping();
-
-  // 3️⃣ Ejecutar periódicamente para reforzar
-  setInterval(ping, 1000);
-
-  // 4️⃣ Detectar si la pestaña fue abierta manualmente y forzar activación
-  if (!window.opener && !sessionStorage.getItem("jsOpened")) {
-    sessionStorage.setItem("jsOpened", 1);
-    location.reload();
-    return;
+  // Función para abrir nueva pestaña y guardarla
+  function abrirNueva() {
+    const nueva = window.open(window.location.href, "_blank");
+    if (nueva) window.tabs.push(nueva);
   }
-})();
+
+  // Función para cerrar todas menos la actual
+  function cerrarOtras() {
+    window.tabs = window.tabs.filter(t => {
+      if (!t.closed && t !== window) {
+        try { t.close(); } catch(e) { console.log("No se pudo cerrar", t); }
+      }
+      return false;
+    });
+  }
+
+  // Auto-ejemplo: abrir 3 pestañas al cargar
+  window.onload = () => {
+    // Solo abrir si es la pestaña principal
+    if (!sessionStorage.getItem("iniciado")) {
+      sessionStorage.setItem("iniciado", "1");
+      abrirNueva();
+      abrirNueva();
+      abrirNueva();
+    }
+  }
 </script>
 </head>
 
 <body>
-  <!-- AQUÍ VA TU WEB NORMAL -->
-  <h1>Mi web</h1>
-  <p>Contenido normal de la página… v0.1</p>
+  <h1>Control de pestañas desde la raíz</h1>
+  <button onclick="abrirNueva()">Abrir nueva pestaña</button>
+  <button onclick="cerrarOtras()">Cerrar otras pestañas</button>
+  <p>Esta pestaña puede cerrar automáticamente todas las hijas que fueron abiertas por script. v0.2</p>
 </body>
 </html>
