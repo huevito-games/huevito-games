@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script>
-(()=>{
-
+ <script>
+(() => {
   const KEY = "TAB_UNICA_JS";
 
-  // 1️⃣ Si NO fue abierta por JavaScript, reabrir correctamente
+  // 1️⃣ Si no se detecta que la pestaña fue "JS-opened", recarga la misma para activar el control
   if (!window.opener && !sessionStorage.getItem("jsOpened")) {
     sessionStorage.setItem("jsOpened", 1);
-    window.open(location.href, "_blank");
-    window.close();
+    location.reload(); // recarga para inicializar el control
     return;
   }
 
@@ -18,13 +16,15 @@
   const id = Date.now() + Math.random();
 
   addEventListener("storage", e => {
-    if (e.key === KEY && e.newValue != id) window.close();
+    if (e.key === KEY && e.newValue != id) {
+      // Intento de cierre, si no se puede, se redirige a una página en blanco
+      try { window.close(); } catch(e) { location.replace("about:blank"); }
+    }
   });
 
   const ping = () => localStorage.setItem(KEY, id);
   ping();
   setInterval(ping, 1000);
-
 })();
 </script>
 </head>
