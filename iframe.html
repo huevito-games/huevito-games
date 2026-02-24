@@ -2,45 +2,37 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>v0.1</title>
+  <title>0.2</title>
 </head>
 <body>
 
 <iframe
   id="miIframe"
-  src="https://huevitohosting.wixsite.com/huevito-gamess"
+  src="https://huevitohosting.wixsite.com/huevito-gamess/juegos"
   width="100%"
   height="600"
   style="border:none;"
 ></iframe>
 
 <script>
-// Obtener el iframe
+// Solo podemos usar la URL inicial del iframe
 const iframe = document.getElementById("miIframe");
+try {
+  const iframeURL = iframe.src; // URL inicial del iframe
+  const urlObj = new URL(iframeURL);
+  const pathSegments = urlObj.pathname.split("/").filter(Boolean);
+  const lastPart = pathSegments.pop();
 
-// Escuchar mensajes del iframe (cross-origin seguro)
-window.addEventListener("message", (event) => {
-  try {
-    // Solo procesamos mensajes de wixsite.com
-    if (!event.origin.includes("wixsite.com")) return;
-
-    // Obtener la URL enviada por el iframe
-    const iframeURL = event.data;
-
-    // Separar la URL
-    const urlObj = new URL(iframeURL);
-    const pathSegments = urlObj.pathname.split("/").filter(Boolean);
-    const lastPart = pathSegments.pop(); // Tomar última parte de la ruta
-
-    if (lastPart) {
-      // Redirigir la página principal al mismo dominio, con el último segmento del iframe
-      const nuevaURL = window.location.origin + "/" + lastPart;
-      window.location.href = nuevaURL;
-    }
-  } catch (e) {
-    console.error("Error al procesar el mensaje del iframe:", e);
+  if (lastPart) {
+    // Redirigir la página principal automáticamente
+    window.location.href = window.location.origin + "/" + lastPart;
   }
-});
+} catch (e) {
+  // Ventana de error si algo falla
+  const errorWindow = window.open("", "Error", "width=600,height=400");
+  errorWindow.document.write("<h2>Error al procesar la URL del iframe</h2>");
+  errorWindow.document.write("<p>" + e.message + "</p>");
+}
 </script>
 
 </body>
