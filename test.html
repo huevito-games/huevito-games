@@ -2,44 +2,58 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Control de Pestañas</title>
+<title>Control automático de pestañas</title>
 <script>
-  // Guardamos todas las pestañas abiertas por script
+(() => {
+  // Array global de referencias a pestañas abiertas por script
   if (!window.tabs) window.tabs = [];
 
-  // Función para abrir nueva pestaña y guardarla
-  function abrirNueva() {
-    const nueva = window.open(window.location.href, "_blank");
-    if (nueva) window.tabs.push(nueva);
+  const TAB_ID = Date.now() + Math.random();
+
+  // Guardamos esta pestaña en sessionStorage para identificarla como raíz
+  if (!sessionStorage.getItem("esRaiz")) {
+    sessionStorage.setItem("esRaiz", "1");
+    window.tabs.push(window); // incluir la raíz
   }
 
-  // Función para cerrar todas menos la actual
+  // Función para abrir una nueva pestaña automáticamente
+  function abrirNueva() {
+    const nueva = window.open(window.location.href, "_blank");
+    if (nueva) {
+      window.tabs.push(nueva);
+      cerrarOtras();
+    }
+  }
+
+  // Función para cerrar todas menos la última abierta
   function cerrarOtras() {
+    const ultima = window.tabs[window.tabs.length - 1];
     window.tabs = window.tabs.filter(t => {
-      if (!t.closed && t !== window) {
-        try { t.close(); } catch(e) { console.log("No se pudo cerrar", t); }
+      if (!t.closed && t !== ultima) {
+        try {
+          t.close();
+        } catch (e) {
+          console.log("No se pudo cerrar la pestaña:", t);
+        }
       }
-      return false;
+      return t && !t.closed;
     });
   }
 
-  // Auto-ejemplo: abrir 3 pestañas al cargar
-  window.onload = () => {
-    // Solo abrir si es la pestaña principal
-    if (!sessionStorage.getItem("iniciado")) {
-      sessionStorage.setItem("iniciado", "1");
-      abrirNueva();
-      abrirNueva();
-      abrirNueva();
-    }
-  }
+  // Abrir nueva pestaña automáticamente cada cierto tiempo (simulación)
+  setInterval(() => {
+    abrirNueva();
+  }, 5000); // abre cada 5 segundos; ajusta según necesites
+
+})();
 </script>
 </head>
 
 <body>
-  <h1>Control de pestañas desde la raíz</h1>
-  <button onclick="abrirNueva()">Abrir nueva pestaña</button>
-  <button onclick="cerrarOtras()">Cerrar otras pestañas</button>
-  <p>Esta pestaña puede cerrar automáticamente todas las hijas que fueron abiertas por script. v0.2</p>
+<h1>Control automático de pestañas v0.3</h1>
+<p>
+  Esta pestaña es la raíz y puede abrir nuevas pestañas automáticamente.  
+  Todas las pestañas abiertas por script se cierran automáticamente, dejando solo la última activa. 
+</p>
 </body>
 </html>
