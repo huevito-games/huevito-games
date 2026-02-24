@@ -17,26 +17,31 @@
 <script>
 const iframe = document.getElementById("miIframe");
 
-iframe.addEventListener("load", () => {
+// Escuchamos mensajes del iframe
+window.addEventListener("message", (event) => {
   try {
-    // Obtener la URL completa del iframe
-    const iframeURL = iframe.contentWindow.location.href;
+    // Solo procesamos mensajes de Wix
+    if (!event.origin.includes("wixsite.com")) return;
 
-    // Crear un objeto URL para separar bien la ruta
+    // Obtenemos la URL enviada por el iframe
+    const iframeURL = event.data;
     const urlObj = new URL(iframeURL);
 
-    // Tomar la última parte de la ruta
+    // Extraemos la última parte de la ruta
     const pathSegments = urlObj.pathname.split("/").filter(Boolean);
-    const lastPart = pathSegments.pop(); // solo "juegos" por ejemplo
+    const lastPart = pathSegments.pop();
 
     if (lastPart) {
-      // Construir la nueva URL correcta
-      const nuevaURL = urlObj.origin + "/" + lastPart;
+      // Redirigir la página principal a la última parte
+      const nuevaURL = "https://paginaiframe.com/" + lastPart;
       window.location.href = nuevaURL;
     }
   } catch (e) {
-    // Abrir una nueva pestaña con el error
-    window.open("data:," + "No se puede leer la URL del iframe directamente (cross-origin): ");
+    // Crear ventana de error mostrando el mensaje
+    const errorWindow = window.open("", "Error", "width=600,height=400");
+    errorWindow.document.write("<h2>Error al procesar postMessage del iframe</h2>");
+    errorWindow.document.write("<p>" + e.message + "</p>");
+    errorWindow.document.write("<pre>" + e.stack + "</pre>");
   }
 });
 </script>
