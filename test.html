@@ -1,40 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Control de pestañas</title>
-</head>
 <body>
 
-<button onclick="abrirNueva()">Abrir nueva pestaña</button>
-<button onclick="cerrarOtras()">Cerrar otras pestañas</button>
+<button onclick="window.open(location.href,'_blank')">
+  Abrir nueva (cerrará las demás)
+</button>
 
 <script>
-  const TAB_ID = Date.now() + Math.random();
+const id = Date.now()+Math.random();
 
-  // Registrar esta pestaña
-  let tabs = JSON.parse(localStorage.getItem("tabs") || "[]");
-  tabs.push(TAB_ID);
-  localStorage.setItem("tabs", JSON.stringify(tabs));
+addEventListener("storage", e => {
+  if(e.key==="ultima" && e.newValue!=id) window.close();
+});
 
-  // Abrir nueva pestaña
-  function abrirNueva() {
-    window.open(window.location.href, "_blank");
-  }
-
-  // Escuchar cambios en localStorage
-  window.addEventListener("storage", function(event) {
-    if (event.key === "cerrarTodo") {
-      const idMantener = event.newValue;
-      if (TAB_ID != idMantener) {
-        window.close();
-      }
-    }
-  });
-
-  // Cerrar otras pestañas
-  function cerrarOtras() {
-    localStorage.setItem("cerrarTodo", TAB_ID);
-  }
+localStorage.setItem("ultima", id);
 </script>
 
 </body>
