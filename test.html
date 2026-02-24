@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <script>
+    (()=>{ 
+      const id = Date.now()+Math.random(),
+            k = "TAB_UNICA";
+      addEventListener("storage",e=>{
+        if(e.key===k && e.newValue!=id) window.close();
+      });
+      const ping = () => localStorage.setItem(k,id);
+      ping();
+      setInterval(ping, 1000);
+    })();
+  </script>
+</head>
+
 <body>
-
-<button onclick="window.open(location.href,'_blank')">
-  Abrir nueva (cerrará las demás)
-</button>
-
-<script>
-const id = Date.now()+Math.random();
-
-addEventListener("storage", e => {
-  if(e.key==="ultima" && e.newValue!=id) window.close();
-});
-
-localStorage.setItem("ultima", id);
-</script>
-
+  <!-- AQUÍ VA TU WEB NORMAL -->
+  <h1>Mi página web</h1>
+  <p>Contenido, scripts, estilos, lo que quieras…</p>
 </body>
 </html>
