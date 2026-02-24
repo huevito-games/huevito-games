@@ -2,46 +2,62 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>0.5</title>
+  <title>0.6</title>
 </head>
 <body>
 
 <iframe
   id="miIframe"
-  src="https://huevitohosting.wixsite.com/huevito-games"
+  src="https://huevitohosting.wixsite.com/huevito-gamess"
   width="100%"
   height="600"
   style="border:none;"
 ></iframe>
 
 <script>
-const iframe = document.getElementById("miIframe");
+// Lista de correspondencias: último segmento -> URL de redirección
+const redirectMap = {
+  "juegos": "https://huevitogames.home.kg/juegos",
+  "hola": "https://miweb.com/hola",
+  "mundo": "https://miweb.com/mundo",
+  // Agrega más según necesites
+};
 
 // Guardamos la URL inicial del iframe
 let lastURL = iframe.src;
 
+// Obtenemos el iframe
+const iframe = document.getElementById("miIframe");
+
+// Detectar recarga del iframe
 iframe.addEventListener("load", () => {
   try {
-    // Cada vez que el iframe se recarga
-    console.log("El iframe se ha recargado");
+    // Obtenemos la URL actual del iframe (cross-origin solo permite src)
+    const currentURL = iframe.src;
 
-    // Detectamos que ha cambiado (recargado)
-    if (iframe.src !== lastURL) {
-      lastURL = iframe.src;
+    // Detectar si cambió (recargado)
+    if (currentURL !== lastURL) {
+      lastURL = currentURL;
     }
 
-    // Tomamos el último segmento de la URL inicial (no cross-origin)
+    // Tomar último segmento de la ruta
     const urlObj = new URL(lastURL);
     const pathSegments = urlObj.pathname.split("/").filter(Boolean);
     const lastPart = pathSegments.pop();
 
     if (lastPart) {
-      // Redirigir la página padre al mismo dominio con el último segmento
-      window.location.href = window.location.origin + "/" + lastPart;
+      // Buscar en la lista de correspondencias
+      if (redirectMap[lastPart]) {
+        // Redirigir al URL correspondiente
+        window.location.href = redirectMap[lastPart];
+      } else {
+        // Si no está en la lista, redirige al mismo dominio con el segmento
+        window.location.href = window.location.origin + "/" + lastPart;
+      }
     }
 
   } catch (e) {
-    // Ventana de error
+    // Abrir ventana de error
     const errorWindow = window.open("", "Error", "width=600,height=400");
     errorWindow.document.write("<h2>Error procesando iframe</h2>");
     errorWindow.document.write("<p>" + e.message + "</p>");
