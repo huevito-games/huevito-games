@@ -1,50 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Mi página con autocierre</title>
-  <script>
-  (() => {
-    const KEY = "TAB_UNICA_JS";
-    const ID = Date.now() + Math.random();
+<meta charset="UTF-8">
+<title>Mi página con autocierre seguro</title>
+<script>
+(() => {
+  const KEY = "TAB_UNICA_JS";
+  const ID = Date.now() + Math.random();
 
-    // 1️⃣ Control de pestaña única
-    addEventListener("storage", e => {
-      if (e.key === KEY && e.newValue != ID) {
-        // Aviso de cierre detectado
-        alert("Se ha detectado que hay otra pestaña activa. Esta pestaña se va a cerrar o bloquear.");
-        // Intento de cierre
-        try {
-          window.close();
-          // Si no se puede cerrar, redirigimos a página en blanco
-          setTimeout(() => location.replace("about:blank"), 500);
-        } catch (err) {
-          location.replace("about:blank");
-        }
+  // 1️⃣ Escuchar cambios de otras pestañas
+  addEventListener("storage", e => {
+    if (e.key === KEY && e.newValue != ID) {
+      // Aviso que otra pestaña tomó control
+      alert("Otra pestaña activa ha sido detectada. Esta pestaña intentará cerrarse o recargarse.");
+
+      // Intento de cierre
+      try {
+        window.close();
+        // Si no se puede cerrar, recarga esta misma pestaña para reactivar el control
+        setTimeout(() => location.reload(), 500);
+      } catch (err) {
+        location.reload();
       }
-    });
-
-    // 2️⃣ Registrar esta pestaña como activa
-    const ping = () => localStorage.setItem(KEY, ID);
-    ping();
-
-    // 3️⃣ Ejecutar periódicamente para reforzar
-    setInterval(ping, 1000);
-
-    // 4️⃣ Detectar si la pestaña fue abierta manualmente
-    if (!window.opener && !sessionStorage.getItem("jsOpened")) {
-      sessionStorage.setItem("jsOpened", 1);
-      // Recarga para activar la lógica correctamente
-      location.reload();
-      return;
     }
-  })();
-  </script>
+  });
+
+  // 2️⃣ Registrar esta pestaña como la activa
+  const ping = () => localStorage.setItem(KEY, ID);
+  ping();
+
+  // 3️⃣ Ejecutar periódicamente para reforzar
+  setInterval(ping, 1000);
+
+  // 4️⃣ Detectar si la pestaña fue abierta manualmente y forzar activación
+  if (!window.opener && !sessionStorage.getItem("jsOpened")) {
+    sessionStorage.setItem("jsOpened", 1);
+    location.reload();
+    return;
+  }
+})();
+</script>
 </head>
 
 <body>
   <!-- AQUÍ VA TU WEB NORMAL -->
-  <h1>Mi página web</h1>
-  <p>Contenido normal, scripts y estilos.</p>
+  <h1>Mi web</h1>
+  <p>Contenido normal de la página… v0.1</p>
 </body>
 </html>
