@@ -1,37 +1,66 @@
-<form id="miFormulario">
-  <input name="Nombre" placeholder="Nombre" required>
-  <input name="Email" type="email" placeholder="Email" required>
-  <textarea name="Mensaje" placeholder="Mensaje"></textarea>
-  <button type="submit">Enviar</button>
-</form>
-<p id="status"></p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Contacto</title>
+</head>
+<body>
+  <h1>Formulario de Contacto</h1>
+  <form id="miFormulario">
+    <input name="Nombre" placeholder="Nombre" required><br><br>
+    <input name="Email" type="email" placeholder="Email" required><br><br>
+    <textarea name="Mensaje" placeholder="Mensaje"></textarea><br><br>
+    <button type="submit">Enviar</button>
+  </form>
+  <p id="status"></p>
 
-<script>
-const form = document.getElementById('miFormulario');
-const status = document.getElementById('status');
+  <script>
+    const form = document.getElementById('miFormulario');
+    const status = document.getElementById('status');
 
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const data = {
-    Nombre: form.Nombre.value,
-    Email: form.Email.value,
-    Mensaje: form.Mensaje.value
-  };
+    const BIN_URL = 'TU_BIN_URL'; // Reemplaza con la URL de tu bin JSONBin
+    const API_KEY = 'TU_API_KEY'; // Reemplaza con tu API Key de JSONBin
 
-  try {
-    const res = await fetch('https://script.google.com/macros/s/AKfycbxok4fgzCauOTt_oAHuIicF_cIITx3wfB7Q_a77ik9ntPoZ-eP2P305qwp0id4TKSH3nA/exec', {
-      method: 'POST',
-      body: JSON.stringify(data)
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const nuevo = {
+        Nombre: form.Nombre.value,
+        Email: form.Email.value,
+        Mensaje: form.Mensaje.value,
+        Fecha: new Date().toLocaleString()
+      };
+
+      try {
+        // Leer datos existentes
+        const resGet = await fetch(BIN_URL + '/latest', {
+          headers: { 'X-Master-Key': API_KEY }
+        });
+        const data = await resGet.json();
+
+        // Agregar nuevo registro
+        data.push(nuevo);
+
+        // Guardar de nuevo en el bin
+        const resPut = await fetch(BIN_URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': API_KEY
+          },
+          body: JSON.stringify(data)
+        });
+
+        if(resPut.ok) {
+          status.textContent = "✅ Enviado correctamente";
+          form.reset();
+        } else {
+          status.textContent = "❌ Error al enviar";
+        }
+      } catch(err) {
+        console.error(err);
+        status.textContent = "❌ Error de red";
+      }
     });
-    if(res.ok) {
-      status.textContent = "✅ Enviado correctamente";
-      form.reset();
-    } else {
-      status.textContent = "❌ Error al enviar";
-    }
-  } catch(err) {
-    status.textContent = "❌ Error de red";
-    console.error(err);
-  }
-});
-</script>
+  </script>
+</body>
+</html>
