@@ -1,0 +1,37 @@
+<form id="miFormulario">
+  <input name="Nombre" placeholder="Nombre" required>
+  <input name="Email" type="email" placeholder="Email" required>
+  <textarea name="Mensaje" placeholder="Mensaje"></textarea>
+  <button type="submit">Enviar</button>
+</form>
+<p id="status"></p>
+
+<script>
+const form = document.getElementById('miFormulario');
+const status = document.getElementById('status');
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const data = {
+    Nombre: form.Nombre.value,
+    Email: form.Email.value,
+    Mensaje: form.Mensaje.value
+  };
+
+  try {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxok4fgzCauOTt_oAHuIicF_cIITx3wfB7Q_a77ik9ntPoZ-eP2P305qwp0id4TKSH3nA/exec', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    if(res.ok) {
+      status.textContent = "✅ Enviado correctamente";
+      form.reset();
+    } else {
+      status.textContent = "❌ Error al enviar";
+    }
+  } catch(err) {
+    status.textContent = "❌ Error de red";
+    console.error(err);
+  }
+});
+</script>
