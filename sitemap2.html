@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mapa automático</title>
+</head>
+<body>
+  <h1>Mapa detectado</h1>
+  <ul id="mapa"></ul>
+
+  <script>
+    const visitadas = new Set();
+    const lista = document.getElementById("mapa");
+
+    function agregar(url) {
+      if (!visitadas.has(url)) {
+        visitadas.add(url);
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = url;
+        a.textContent = url;
+        a.target = "_blank";
+        li.appendChild(a);
+        lista.appendChild(li);
+      }
+    }
+
+    fetch(window.location.origin)
+      .then(res => res.text())
+      .then(html => {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const enlaces = doc.querySelectorAll("a[href]");
+
+        enlaces.forEach(enlace => {
+          const url = new URL(enlace.href, window.location.origin);
+          if (url.origin === window.location.origin) {
+            agregar(url.pathname);
+          }
+        });
+      });
+  </script>
+</body>
+</html>
