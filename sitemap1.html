@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mapa del Sitio</title>
+</head>
+<body>
+  <h1>Mapa completo del sitio</h1>
+  <ul id="lista"></ul>
+
+  <script>
+    fetch('/sitemap.xml')
+      .then(response => response.text())
+      .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+      .then(data => {
+        const urls = data.querySelectorAll("url > loc");
+        const lista = document.getElementById("lista");
+
+        urls.forEach(url => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = url.textContent;
+          a.textContent = url.textContent;
+          a.target = "_blank";
+          li.appendChild(a);
+          lista.appendChild(li);
+        });
+      })
+      .catch(err => {
+        document.body.innerHTML += "<p>No se pudo cargar el sitemap.xml</p>";
+      });
+  </script>
+</body>
+</html>
